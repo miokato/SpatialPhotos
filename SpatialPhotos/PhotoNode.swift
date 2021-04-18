@@ -29,7 +29,7 @@ class PhotoNode: SCNNode {
             self = .inactive
         }
     }
-    
+    var screenNode: SCNNode!
     var state: State = .inactive {
         didSet {
             switch state {
@@ -56,9 +56,9 @@ class PhotoNode: SCNNode {
         let height: CGFloat = width * ratio
         let plane = SCNPlane(width: width, height: height)
         plane.firstMaterial?.diffuse.contents = image
-        let node = SCNNode(geometry: plane)
-        node.eulerAngles.x -= Float.pi / 2.0
+        screenNode = SCNNode(geometry: plane)
+        screenNode.eulerAngles.x -= Float.pi / 2.0
 
-        addChildNode(node)
+        addChildNode(screenNode)
     }
 }

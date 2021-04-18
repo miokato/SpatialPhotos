@@ -64,9 +64,8 @@ class ViewController: UIViewController {
     
     @objc func handlePinch(gesture: UIPinchGestureRecognizer) {
         guard let activeNode = getActiveNode() else { return }
-        let child = activeNode.childNodes[0]
         let scale = Float(gesture.scale)
-        child.simdScale = simd_float3(scale, scale, scale)
+        activeNode.screenNode.simdScale = simd_float3(scale, scale, scale)
     }
     
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
@@ -79,6 +78,7 @@ class ViewController: UIViewController {
 
     }
     
+    // MARK: - IBActions
     @IBAction func pressedPlusButton(_ sender: UIButton) {
         showPickerView()
     }
