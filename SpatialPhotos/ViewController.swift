@@ -9,7 +9,7 @@ import UIKit
 import ARKit
 import SceneKit
 import PhotosUI
-
+import CoreGraphics
 
 class ViewController: UIViewController {
     
@@ -48,18 +48,23 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
-        guard let image = selectedImageView.image else {
+        guard let _image = selectedImageView.image else {
             let ac = UIAlertController(title: "画像を選択してください。", message: nil, preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             present(ac, animated: true, completion: nil)
             return
         }
-        
+
         let location = gesture.location(in: sceneView)
         guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
               let firstResult = sceneView.session.raycast(query).first else { return }
         
-        let plane = SCNPlane(width: 0.5, height: 0.5)
+        let image = _image.fixOrientation()
+        let ratio = image.size.height / image.size.width
+        let width: CGFloat = 0.2
+        let height: CGFloat = width * ratio
+        
+        let plane = SCNPlane(width: width, height: height)
         plane.firstMaterial?.diffuse.contents = image
         let planeNode = SCNNode(geometry: plane)
         let planeParentNode = SCNNode()
@@ -75,6 +80,7 @@ class ViewController: UIViewController {
     
     private func showPickerView() {
         let config = PHPickerConfiguration()
+
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         present(picker, animated: true, completion: nil)
@@ -120,6 +126,4 @@ extension simd_float4x4 {
     var translation: simd_float3 {
         [columns.3.x, columns.3.y, columns.3.z]
     }
-    
-
 }
