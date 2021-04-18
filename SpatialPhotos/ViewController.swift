@@ -40,6 +40,8 @@ class ViewController: UIViewController {
         sceneView.addGestureRecognizer(tapGesture)
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(gesture:)))
         sceneView.addGestureRecognizer(pinchGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
+        sceneView.addGestureRecognizer(panGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,14 +63,20 @@ class ViewController: UIViewController {
     }
     
     @objc func handlePinch(gesture: UIPinchGestureRecognizer) {
-        guard let activeNode = photoParentNode.childNodes.filter({ (node) -> Bool in
-            guard let photoNode = node as? PhotoNode else { return false }
-            return photoNode.state == .active
-        }).first else { return }
-        
+        guard let activeNode = getActiveNode() else { return }
         let child = activeNode.childNodes[0]
         let scale = Float(gesture.scale)
         child.simdScale = simd_float3(scale, scale, scale)
+    }
+    
+    @objc func handlePan(gesture: UIPanGestureRecognizer) {
+        let location = gesture.location(in: sceneView)
+        guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
+              let firstResult = sceneView.session.raycast(query).first else { return }
+        
+        guard let activeNode = getActiveNode() else { return }
+        activeNode.simdWorldPosition = firstResult.worldTransform.translation
+
     }
     
     @IBAction func pressedPlusButton(_ sender: UIButton) {
@@ -76,6 +84,14 @@ class ViewController: UIViewController {
     }
     
     // MARK: Utils -
+    private func getActiveNode() -> PhotoNode? {
+        let activeNode = photoParentNode.childNodes.filter({ (node) -> Bool in
+            guard let photoNode = node as? PhotoNode else { return false }
+            return photoNode.state == .active
+        }).first
+        return activeNode as? PhotoNode
+    }
+    
     private func isHitPhotoNode(location: CGPoint) -> Bool {
         // Doesn't hit.
         guard let hitResult = sceneView.hitTest(location, options: [:]).first else {
