@@ -83,12 +83,21 @@ class ViewController: UIViewController {
         }
         
         // Hit but isn't photo node.
-        guard let photoNode = hitResult.node.parent as? PhotoNode else {
+        guard let hitPhotoNode = hitResult.node.parent as? PhotoNode else {
             return false
         }
-            
-        // Hit
-        photoNode.state.transition()
+                    
+        // Hit then to active.
+        hitPhotoNode.state.transition()
+        
+        // To inactive except hitNode.
+        for child in photoParentNode.childNodes {
+            guard let photoNode = child as? PhotoNode else { continue }
+            if photoNode == hitPhotoNode {
+                continue
+            }
+            photoNode.state.inactive()
+        }
         
         return true
     }

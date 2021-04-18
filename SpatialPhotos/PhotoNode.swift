@@ -20,6 +20,14 @@ class PhotoNode: SCNNode {
                 self = .active
             }
         }
+        
+        mutating func active() {
+            self = .active
+        }
+        
+        mutating func inactive() {
+            self = .inactive
+        }
     }
     
     var state: State = .inactive {
@@ -27,6 +35,7 @@ class PhotoNode: SCNNode {
             switch state {
             case .active:
                 print("to active")
+                opacity = 0.5
                 runAction(SCNAction.repeatForever(SCNAction.sequence([
                     SCNAction.scale(to: 1.05, duration: 0.5),
                     SCNAction.scale(to: 0.95, duration: 0.5),
@@ -34,6 +43,7 @@ class PhotoNode: SCNNode {
                 
             case .inactive:
                 print("to inactive")
+                opacity = 1.0
                 removeAllActions()
             }
         }
