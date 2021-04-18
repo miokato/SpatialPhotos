@@ -38,6 +38,8 @@ class ViewController: UIViewController {
         // Register gesture.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
         sceneView.addGestureRecognizer(tapGesture)
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(gesture:)))
+        sceneView.addGestureRecognizer(pinchGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,6 +49,7 @@ class ViewController: UIViewController {
         sceneView.session.run(configuration, options: [.removeExistingAnchors, .resetTracking])
     }
     
+    // MARK: Gestures -
     @objc func handleTap(gesture: UITapGestureRecognizer) {
         let location = gesture.location(in: sceneView)
         
@@ -55,7 +58,18 @@ class ViewController: UIViewController {
         }
         
         putPhotoNode(location: location)
-    }    
+    }
+    
+    @objc func handlePinch(gesture: UIPinchGestureRecognizer) {
+        guard let activeNode = photoParentNode.childNodes.filter({ (node) -> Bool in
+            guard let photoNode = node as? PhotoNode else { return false }
+            return photoNode.state == .active
+        }).first else { return }
+        
+        let child = activeNode.childNodes[0]
+        let scale = Float(gesture.scale)
+        child.simdScale = simd_float3(scale, scale, scale)
+    }
     
     @IBAction func pressedPlusButton(_ sender: UIButton) {
         showPickerView()
