@@ -7,8 +7,8 @@
 
 import SceneKit
 
-class PhotoNode: SCNNode, StatableNode {
-
+class VideoNode: SCNNode, StatableNode {
+   
     var screenNode: SCNNode!
     var state: State = .inactive {
         didSet {
@@ -42,3 +42,4 @@ class PhotoNode: SCNNode, StatableNode {
         addChildNode(screenNode)
     }
 }
+

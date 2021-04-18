@@ -10,6 +10,12 @@ import ARKit
 import SceneKit
 import PhotosUI
 import CoreGraphics
+import AVFoundation
+
+enum MediaType {
+    case image
+    case video
+}
 
 class ViewController: UIViewController {
     
@@ -23,6 +29,9 @@ class ViewController: UIViewController {
         configuration.planeDetection = .vertical
         return configuration
     }
+    
+    var currentMediaType: MediaType?
+    var currentPlayerItem: AVPlayerItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -158,9 +167,10 @@ extension ViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
         
-        let itemProvider = results.first?.itemProvider
+        guard let itemProvider = results.first?.itemProvider else { return }
         
-        if let itemProvider = itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self) {
+        // Load image.
+        if itemProvider.canLoadObject(ofClass: UIImage.self) {
             itemProvider.loadObject(ofClass: UIImage.self) { (reading, error) in
                 if let error = error {
                     assertionFailure("画像を読み込めない : \(error.localizedDescription)")
@@ -168,10 +178,22 @@ extension ViewController: PHPickerViewControllerDelegate {
 
                 if let image = reading as? UIImage {
                     DispatchQueue.main.async {
+                        print("Set image")
                         self.selectedImageView.image = image
+                        self.currentMediaType = .image
                     }
                 }
             }
-        }    
+        }
+        
+        // Load movie.
+        if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+            itemProvider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
+                print("Set video")
+                guard let url = videoURL as? URL else { return }
+                currentMediaType = .video
+                currentPlayerItem = AVPlayerItem(url: url)
+            }
+        }
     }
 }
