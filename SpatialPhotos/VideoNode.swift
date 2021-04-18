@@ -8,6 +8,7 @@
 import SceneKit
 import AVFoundation
 import SpriteKit
+import UIKit
 
 class VideoNode: SCNNode, StatableNode {
    
@@ -38,9 +39,10 @@ class VideoNode: SCNNode, StatableNode {
         CGSize(width: maxLength, height: maxLength)
     }
     
-    convenience init(withPlayeItem item: AVPlayerItem) {
+    convenience init(withAVAsset asset: AVAsset) {
         self.init()
-        avPlayer = createAVPlayer(withPlayerItem: item)
+        let avPlayerItem = AVPlayerItem(asset: asset)
+        avPlayer = createAVPlayer(withPlayerItem: avPlayerItem)
         let skVideoNode = createSKVideo(avPlayer: avPlayer, viewSize: viewSize)
         let skScene = createSKScene(skVideo: skVideoNode, viewSize: viewSize)
         let plane = SCNPlane(width: 0.5, height: 0.5)
@@ -67,7 +69,7 @@ class VideoNode: SCNNode, StatableNode {
         // キャラクターを抜くための画像を右に配置しているため、横幅を二倍にする
         node.size = CGSize(width: viewSize.width, height: viewSize.height)
         node.yScale = -1.0
-        node.pause()
+//        node.pause()
         node.alpha = 1.0
         
         return node
@@ -76,7 +78,7 @@ class VideoNode: SCNNode, StatableNode {
     /// ビデオ再生用のSKScene作成
     private func createSKScene(skVideo: SKVideoNode, viewSize: CGSize) -> SKScene {
         let skScene = SKScene(size: viewSize)
-        skScene.backgroundColor = UIColor.blue
+        skScene.backgroundColor = UIColor.white
         skScene.scaleMode = .aspectFit
         skScene.addChild(skVideo)
         

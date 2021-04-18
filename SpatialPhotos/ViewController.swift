@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     }
     
     var currentMediaType: MediaType?
-    var currentPlayerItem: AVPlayerItem?
+    var currentAVAsset: AVAsset?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +55,7 @@ class ViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        super.viewWillAppear(animated)        
         
         let configuration = defaultConfiguration
         sceneView.session.run(configuration, options: [.removeExistingAnchors, .resetTracking])
@@ -136,7 +136,7 @@ class ViewController: UIViewController {
     }
     
     private func putVideoNode(location: CGPoint) {
-        guard let currentPlayerItem = currentPlayerItem else {
+        guard let currentAVAsset = currentAVAsset else {
             let ac = UIAlertController(title: "動画がありません。", message: nil, preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             present(ac, animated: true, completion: nil)
@@ -147,7 +147,7 @@ class ViewController: UIViewController {
               let firstResult = sceneView.session.raycast(query).first else { return }
         
         
-        let videoNode = VideoNode(withPlayeItem: currentPlayerItem)
+        let videoNode = VideoNode(withAVAsset: currentAVAsset)
         videoNode.simdWorldTransform = firstResult.worldTransform
         photoParentNode.addChildNode(videoNode)
     }
@@ -170,7 +170,8 @@ class ViewController: UIViewController {
     }
     
     private func showPickerView() {
-        let config = PHPickerConfiguration()
+        var config = PHPickerConfiguration()
+        config.preferredAssetRepresentationMode = .current
 
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
@@ -212,12 +213,17 @@ extension ViewController: PHPickerViewControllerDelegate {
         }
         
         // Load movie.
-        if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-            itemProvider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
-                guard let url = videoURL as? URL else { return }
-                currentMediaType = .video
+        if itemProvider.hasItemConformingToTypeIdentifier("public.movie") {
+            itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
+                guard let url = url else { return }
+                let fm = FileManager.default
+                // 一次ファイルはシステムに消去されるため、データをコピーする必要があるようだ。
+                let destination = fm.temporaryDirectory.appendingPathComponent("video123.mp4")
+                try? fm.removeItem(at: destination)
+                try? fm.copyItem(at: url, to: destination)
+                self.currentMediaType = .video
                 print("Set video \(url)")
-                currentPlayerItem = AVPlayerItem(url: url)
+                self.currentAVAsset = AVURLAsset(url: destination)
             }
         }
     }
