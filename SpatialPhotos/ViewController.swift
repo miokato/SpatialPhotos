@@ -48,7 +48,7 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
-        guard selectedImageView.image != nil else {
+        guard let image = selectedImageView.image else {
             let ac = UIAlertController(title: "画像を選択してください。", message: nil, preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             present(ac, animated: true, completion: nil)
@@ -60,6 +60,7 @@ class ViewController: UIViewController {
               let firstResult = sceneView.session.raycast(query).first else { return }
         
         let plane = SCNPlane(width: 0.5, height: 0.5)
+        plane.firstMaterial?.diffuse.contents = image
         let planeNode = SCNNode(geometry: plane)
         let planeParentNode = SCNNode()
         planeNode.eulerAngles.x -= Float.pi / 2.0
