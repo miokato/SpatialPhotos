@@ -60,18 +60,9 @@ class ViewController: UIViewController {
               let firstResult = sceneView.session.raycast(query).first else { return }
         
         let image = _image.fixOrientation()
-        let ratio = image.size.height / image.size.width
-        let width: CGFloat = 0.2
-        let height: CGFloat = width * ratio
-        
-        let plane = SCNPlane(width: width, height: height)
-        plane.firstMaterial?.diffuse.contents = image
-        let planeNode = SCNNode(geometry: plane)
-        let planeParentNode = SCNNode()
-        planeNode.eulerAngles.x -= Float.pi / 2.0
-        planeParentNode.addChildNode(planeNode)
-        planeParentNode.simdWorldTransform = firstResult.worldTransform
-        photoParentNode.addChildNode(planeParentNode)
+        let photoNode = PhotoNode(withImage: image)
+        photoNode.simdWorldTransform = firstResult.worldTransform
+        photoParentNode.addChildNode(photoNode)
     }
     
     @IBAction func pressedPlusButton(_ sender: UIButton) {
