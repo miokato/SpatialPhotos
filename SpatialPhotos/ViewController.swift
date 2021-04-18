@@ -48,6 +48,13 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
+        guard selectedImageView.image != nil else {
+            let ac = UIAlertController(title: "画像を選択してください。", message: nil, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            present(ac, animated: true, completion: nil)
+            return
+        }
+        
         let location = gesture.location(in: sceneView)
         guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
               let firstResult = sceneView.session.raycast(query).first else { return }
