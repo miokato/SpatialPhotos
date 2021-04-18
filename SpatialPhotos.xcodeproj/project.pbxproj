@@ -49,6 +49,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9533D198262C5C8A009F1F7C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9533D18F262BF8FA009F1F7C /* simd_float4x4+Extensions.swift */,
+				9533D189262BF6B7009F1F7C /* UIImage+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		95B9C264262BC13700866FAC = {
 			isa = PBXGroup;
 			children = (
@@ -72,11 +81,10 @@
 			children = (
 				95B9C270262BC13700866FAC /* AppDelegate.swift */,
 				95B9C272262BC13700866FAC /* ViewController.swift */,
-				9533D18F262BF8FA009F1F7C /* simd_float4x4+Extensions.swift */,
 				9533D18C262BF732009F1F7C /* PhotoNode.swift */,
 				9533D192262C26DE009F1F7C /* VideoNode.swift */,
 				9533D195262C2779009F1F7C /* StatableNode.swift */,
-				9533D189262BF6B7009F1F7C /* UIImage+Extensions.swift */,
+				9533D198262C5C8A009F1F7C /* Extensions */,
 				95B9C276262BC13700866FAC /* Main.storyboard */,
 				95B9C279262BC13700866FAC /* Assets.xcassets */,
 				95B9C27B262BC13700866FAC /* LaunchScreen.storyboard */,
