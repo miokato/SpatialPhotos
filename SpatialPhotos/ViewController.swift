@@ -8,10 +8,13 @@
 import UIKit
 import ARKit
 import SceneKit
+import PhotosUI
+
 
 class ViewController: UIViewController {
     
     @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var selectedImageView: UIImageView!
     
     var defaultConfiguration: ARWorldTrackingConfiguration {
         let configuration = ARWorldTrackingConfiguration()
@@ -30,8 +33,7 @@ class ViewController: UIViewController {
         
         // Register gesture.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
-        sceneView.addGestureRecognizer(tapGesture)
-        
+        sceneView.addGestureRecognizer(tapGesture)                              
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,7 +44,14 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
-        print("tap")
+        showPickerView()
+    }
+    
+    private func showPickerView() {
+        let config = PHPickerConfiguration()
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true, completion: nil)
     }
     
     
@@ -54,4 +63,29 @@ extension ViewController: ARSessionDelegate {
 
 extension ViewController: ARSCNViewDelegate {
     
+}
+
+extension ViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+        let itemProvider = results.first?.itemProvider
+        
+        if let itemProvider = itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self) {
+            itemProvider.loadObject(ofClass: UIImage.self) { (reading, error) in
+                if let error = error {
+                    assertionFailure("画像を読み込めない : \(error.localizedDescription)")
+                }
+
+                if let image = reading as? UIImage {
+                    DispatchQueue.main.async {
+                        self.selectedImageView.image = image
+                    }
+                }
+            }
+        }
+        
+    }
+    
+   
 }
