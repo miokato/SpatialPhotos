@@ -20,21 +20,34 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </arscnView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hmK-5X-2EL">
-                                <rect key="frame" x="0.0" y="796" width="414" height="100"/>
+                                <rect key="frame" x="0.0" y="756" width="414" height="140"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gVE-E3-0bf">
-                                        <rect key="frame" x="157" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="157" y="40" width="100" height="100"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="gVE-E3-0bf" secondAttribute="height" multiplier="1:1" id="Hy2-x8-dVm"/>
+                                            <constraint firstAttribute="height" constant="100" id="vpC-iQ-wjJ"/>
                                         </constraints>
                                     </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M0d-en-1xx">
+                                        <rect key="frame" x="194.5" y="10" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="4tI-Pf-62g"/>
+                                            <constraint firstAttribute="height" constant="25" id="X8I-5b-mcI"/>
+                                        </constraints>
+                                        <state key="normal" image="plus" catalog="system"/>
+                                        <connections>
+                                            <action selector="pressedPlusButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vta-mc-mCV"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="gVE-E3-0bf" firstAttribute="top" secondItem="hmK-5X-2EL" secondAttribute="top" id="Fwn-td-UWj"/>
-                                    <constraint firstAttribute="height" constant="100" id="K3E-Kz-UE4"/>
+                                    <constraint firstItem="M0d-en-1xx" firstAttribute="centerX" secondItem="hmK-5X-2EL" secondAttribute="centerX" id="Eab-YH-0ex"/>
+                                    <constraint firstAttribute="height" constant="140" id="K3E-Kz-UE4"/>
                                     <constraint firstAttribute="bottom" secondItem="gVE-E3-0bf" secondAttribute="bottom" id="KOz-ef-CcA"/>
                                     <constraint firstItem="gVE-E3-0bf" firstAttribute="centerX" secondItem="hmK-5X-2EL" secondAttribute="centerX" id="lGZ-Y4-ubl"/>
+                                    <constraint firstItem="M0d-en-1xx" firstAttribute="top" secondItem="hmK-5X-2EL" secondAttribute="top" constant="10" id="rzN-Be-ZIb"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -61,6 +74,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

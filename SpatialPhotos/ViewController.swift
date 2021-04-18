@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var selectedImageView: UIImageView!
     
+    var photoParentNode = SCNNode()
+    
     var defaultConfiguration: ARWorldTrackingConfiguration {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .vertical
@@ -31,9 +33,11 @@ class ViewController: UIViewController {
         sceneView.delegate = self
         sceneView.session.delegate = self
         
+        sceneView.scene.rootNode.addChildNode(photoParentNode)
+        
         // Register gesture.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
-        sceneView.addGestureRecognizer(tapGesture)                              
+        sceneView.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,6 +48,20 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: sceneView)
+        guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
+              let firstResult = sceneView.session.raycast(query).first else { return }
+        
+        let plane = SCNPlane(width: 0.5, height: 0.5)
+        let planeNode = SCNNode(geometry: plane)
+        let planeParentNode = SCNNode()
+        planeNode.eulerAngles.x -= Float.pi / 2.0
+        planeParentNode.addChildNode(planeNode)
+        planeParentNode.simdWorldTransform = firstResult.worldTransform
+        photoParentNode.addChildNode(planeParentNode)
+    }
+    
+    @IBAction func pressedPlusButton(_ sender: UIButton) {
         showPickerView()
     }
     
@@ -88,4 +106,12 @@ extension ViewController: PHPickerViewControllerDelegate {
     }
     
    
+}
+
+extension simd_float4x4 {
+    var translation: simd_float3 {
+        [columns.3.x, columns.3.y, columns.3.z]
+    }
+    
+
 }
