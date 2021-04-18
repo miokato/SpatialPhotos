@@ -41,6 +41,7 @@ class ViewController: UIViewController {
         sceneView.autoenablesDefaultLighting = true
         sceneView.delegate = self
         sceneView.session.delegate = self
+        sceneView.debugOptions = [.showWireframe]
         
         sceneView.scene.rootNode.addChildNode(photoParentNode)
         
@@ -68,7 +69,14 @@ class ViewController: UIViewController {
             return
         }
         
-        putPhotoNode(location: location)
+        switch currentMediaType {
+        case .image:
+            putPhotoNode(location: location)
+        case .video:
+            putVideoNode(location: location)
+        default:
+            break
+        }
     }
     
     @objc func handlePinch(gesture: UIPinchGestureRecognizer) {
@@ -125,6 +133,23 @@ class ViewController: UIViewController {
         }
         
         return true
+    }
+    
+    private func putVideoNode(location: CGPoint) {
+        guard let currentPlayerItem = currentPlayerItem else {
+            let ac = UIAlertController(title: "動画がありません。", message: nil, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            present(ac, animated: true, completion: nil)
+            return
+        }
+        
+        guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
+              let firstResult = sceneView.session.raycast(query).first else { return }
+        
+        
+        let videoNode = VideoNode(withPlayeItem: currentPlayerItem)
+        videoNode.simdWorldTransform = firstResult.worldTransform
+        photoParentNode.addChildNode(videoNode)
     }
     
     private func putPhotoNode(location: CGPoint) {
@@ -189,9 +214,9 @@ extension ViewController: PHPickerViewControllerDelegate {
         // Load movie.
         if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
             itemProvider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
-                print("Set video")
                 guard let url = videoURL as? URL else { return }
                 currentMediaType = .video
+                print("Set video \(url)")
                 currentPlayerItem = AVPlayerItem(url: url)
             }
         }
