@@ -48,14 +48,51 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: sceneView)
+        
+        if isHitPhotoNode(location: location) {
+            return
+        }
+        
+        putPhotoNode(location: location)
+    }    
+    
+    @IBAction func pressedPlusButton(_ sender: UIButton) {
+        showPickerView()
+    }
+    
+    // MARK: Utils -
+    private func isHitPhotoNode(location: CGPoint) -> Bool {
+        // Doesn't hit.
+        guard let hitResult = sceneView.hitTest(location, options: [:]).first else {
+            return false
+        }
+        
+        // Hit but isn't photo node.
+        guard let photoNode = hitResult.node.parent as? PhotoNode else {
+            return false
+        }
+            
+        // Hit
+        switch photoNode.state {
+        case .active:
+            photoNode.state = .inactive
+            
+        default:
+            photoNode.state = .active
+        }
+        print(photoNode.state)
+        return true
+    }
+    
+    private func putPhotoNode(location: CGPoint) {
         guard let _image = selectedImageView.image else {
             let ac = UIAlertController(title: "画像を選択してください。", message: nil, preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             present(ac, animated: true, completion: nil)
             return
         }
-
-        let location = gesture.location(in: sceneView)
+        
         guard let query = sceneView.raycastQuery(from: location, allowing: .estimatedPlane, alignment: .vertical),
               let firstResult = sceneView.session.raycast(query).first else { return }
         
@@ -63,10 +100,6 @@ class ViewController: UIViewController {
         let photoNode = PhotoNode(withImage: image)
         photoNode.simdWorldTransform = firstResult.worldTransform
         photoParentNode.addChildNode(photoNode)
-    }
-    
-    @IBAction func pressedPlusButton(_ sender: UIButton) {
-        showPickerView()
     }
     
     private func showPickerView() {

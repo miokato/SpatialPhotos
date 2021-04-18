@@ -8,6 +8,13 @@
 import SceneKit
 
 class PhotoNode: SCNNode {
+    enum State {
+        case inactive
+        case active
+    }
+    
+    var state: State = .inactive
+    
     convenience init(withImage image: UIImage) {
         self.init()
         let ratio = image.size.height / image.size.width
