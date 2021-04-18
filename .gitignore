@@ -1,0 +1,18 @@
+# Xcode (from gitignore.io)
+build/
+*.pbxuser
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# CocoaPod
+Pods/*
+
+# others
+*.swp
+!.gitkeep
+.DS_Store
