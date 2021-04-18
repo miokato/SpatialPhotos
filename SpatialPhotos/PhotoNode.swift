@@ -11,9 +11,33 @@ class PhotoNode: SCNNode {
     enum State {
         case inactive
         case active
+        
+        mutating func transition() {
+            switch self {
+            case .active:
+                self = .inactive
+            case .inactive:
+                self = .active
+            }
+        }
     }
     
-    var state: State = .inactive
+    var state: State = .inactive {
+        didSet {
+            switch state {
+            case .active:
+                print("to active")
+                runAction(SCNAction.repeatForever(SCNAction.sequence([
+                    SCNAction.scale(to: 1.05, duration: 0.5),
+                    SCNAction.scale(to: 0.95, duration: 0.5),
+                ])))
+                
+            case .inactive:
+                print("to inactive")
+                removeAllActions()
+            }
+        }
+    }
     
     convenience init(withImage image: UIImage) {
         self.init()

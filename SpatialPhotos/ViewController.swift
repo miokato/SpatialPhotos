@@ -74,14 +74,8 @@ class ViewController: UIViewController {
         }
             
         // Hit
-        switch photoNode.state {
-        case .active:
-            photoNode.state = .inactive
-            
-        default:
-            photoNode.state = .active
-        }
-        print(photoNode.state)
+        photoNode.state.transition()
+        
         return true
     }
     
